@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import AppError from "../utils/AppError";
+import { success } from "@/utils/response";
 
 export const createAccount = (req: Request, res: Response, next: NextFunction) => {
     res.send("createAccount");
@@ -11,10 +12,12 @@ export const createAccount = (req: Request, res: Response, next: NextFunction) =
 }
 export const Singin = (req: Request, res: Response, next: NextFunction) => {
     try {
-        // throw new AppError("Hellow", 404, []);
 
-        console.log(req.body);
 
+
+
+
+        success(res, {}, "Success", 200);
     } catch (err) {
         next(err);
     }
