@@ -9,7 +9,7 @@ export const Sign_in_Schema = Joi.object({
             "string.required": "Email is required",
         }
     ),
-    password: Joi.string().trim().required().lowercase().messages(
+    password: Joi.string().trim().required().messages(
         {
             "string.any": "Password is required",
             "string.empty": "Password is required",
@@ -32,7 +32,7 @@ export const Sing_up_schema = Joi.object({
         "any.required": "Email is required"
     }),
 
-    password: Joi.string().min(6).required().messages({
+    password: Joi.string().trim().min(6).required().messages({
         "string.min": "Password must be at least 6 characters",
         "string.empty": "Password is required",
         "any.required": "Password is required"

@@ -1,4 +1,5 @@
-import mongoose from "mongoose";
+import { required } from "joi";
+import mongoose, { Schema } from "mongoose";
 
 const roomSchema = new mongoose.Schema({
     roomId: {
@@ -16,8 +17,10 @@ const roomSchema = new mongoose.Schema({
         default: "javascript"
     },
     createdBy: {
-        userId: Number,
-        username: String
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: "User",
+        index: true
     },
     users: [
         {

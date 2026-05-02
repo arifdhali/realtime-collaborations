@@ -8,8 +8,8 @@ const authRoutes = Router();
 
 authRoutes.post("/sign-in", ValidateSchema(Sign_in_Schema), Singin);
 authRoutes.post("/sign-up", ValidateSchema(Sing_up_schema), createAccount);
-authRoutes.post("/forgot", forgotPassword)
-authRoutes.post("/logout", logout);
+// authRoutes.post("/forgot", forgotPassword)
+// authRoutes.post("/logout", logout);
 
 
 export default authRoutes;
