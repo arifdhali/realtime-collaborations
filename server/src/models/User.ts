@@ -20,20 +20,25 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        required: true,
-        enum: ["user", "admin"]
+        enum: ["user", "admin"],
+        default: "user"
     },
     address: {
         type: String,
     },
     device_type: {
         type: String,
-        required: true
+        enum: ["web", "mobile"],
+        required: true,
+        default: "web"
     },
     last_access: {
         type: Date,
         default: Date.now
     },
-
+    status: {
+        type: Boolean,
+        default:true,
+    }
 }, { timestamps: true });
 export const User = mongoose.model("User", userSchema);
