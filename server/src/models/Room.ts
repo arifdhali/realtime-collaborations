@@ -27,6 +27,14 @@ const roomSchema = new mongoose.Schema({
             socketId: String,
             username: String
         }
-    ]
+    ],
+    status: {
+        type: Boolean,
+        default: true
+    },
+    limit_users:{
+        type:Number,
+        default: 5
+    }
 }, { timestamps: true })
 export const Room = mongoose.model("Room", roomSchema)

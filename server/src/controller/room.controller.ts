@@ -8,7 +8,7 @@ import crypto from "crypto";
 export const createRoom = async (req: Request, res: Response, next: NextFunction) => {
 
 
-    
+
     try {
         const { language } = req.body;
         const { id } = req.user;
@@ -35,4 +35,41 @@ export const createRoom = async (req: Request, res: Response, next: NextFunction
 
 
 
+}
+
+export const getRooms = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.user;
+        let rooms = await Room.find(
+            { createdBy: id, status: true }
+        ).populate("createdBy", "name -_id").select("-__v -createdAt -updatedAt").lean();
+
+        if (rooms.length >= 1) {
+            success(res, { rooms }, "Rooms fetched successfully", 200);
+        } else {
+
+            success(res, {}, "No rooms available", 200);
+        }
+
+    } catch (err) {
+        console.log(err)
+        next(err);
+    }
+}
+
+export const getRoomById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { room_id } = req.params;
+        const room = await Room.findOne({ roomId: room_id, status: true });
+        if (room) {
+            success(res, { room }, "Room fetched successfully", 200);
+        } else {
+            success(res, {}, "No room found", 200);
+        }
+
+
+
+    } catch (err) {
+        next(err);
+    }
 }

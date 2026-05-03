@@ -1,8 +1,9 @@
-import { createRoom } from "@/controller/room.controller";
-import { AuthorizationMiddleware } from "@/middleware/authrizations.middleware";
-import { Router } from "express";
+import { createRoom, getRoomById, getRooms } from "@/controller/room.controller";
+ import { Router } from "express";
 const roomRoute = Router();
 
-roomRoute.post("/create", AuthorizationMiddleware, createRoom)
+roomRoute.get("/list", getRooms)
+roomRoute.get("/:room_id", getRoomById)
+roomRoute.post("/create", createRoom)
 
 export default roomRoute;
