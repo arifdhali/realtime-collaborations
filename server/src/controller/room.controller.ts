@@ -73,3 +73,30 @@ export const getRoomById = async (req: Request, res: Response, next: NextFunctio
         next(err);
     }
 }
+
+
+export const joinRoom = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { room_id } = req.params;
+        const room = await Room.findOneAndUpdate({ roomId: room_id, status: true }, {
+            $addToSet: {
+                users: {
+                    socketId: req.body.socketId,
+                    user_id: req.user?.id
+                }
+            }
+        }, {
+            returnDocument: "after"
+        });
+
+        if (!room) {
+            return next(new AppError("Room not found", 404));
+        }
+        success(res, room, "Joined room successfully", 200);
+
+
+    } catch (err) {
+        next(err);
+
+    }
+}

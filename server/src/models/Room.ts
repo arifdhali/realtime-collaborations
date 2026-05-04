@@ -1,4 +1,3 @@
-import { required } from "joi";
 import mongoose, { Schema } from "mongoose";
 
 const roomSchema = new mongoose.Schema({
@@ -25,7 +24,10 @@ const roomSchema = new mongoose.Schema({
     users: [
         {
             socketId: String,
-            username: String
+            user_id: {
+                type:Schema.Types.ObjectId,
+                ref: "User"
+            }
         }
     ],
     status: {
