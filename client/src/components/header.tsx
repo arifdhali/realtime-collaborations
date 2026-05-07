@@ -1,4 +1,4 @@
-import React from 'react'
+import { Link } from "react-router"
 
 const Header = () => {
     return (
@@ -8,10 +8,10 @@ const Header = () => {
             </div>
             <div className="flex items-center gap-padding-md">
                 <div className="flex items-center gap-padding-md">
-                    <button className="text-on-surface-variant hover:text-primary transition-colors text-label-sm font-label-sm px-padding-md py-2">Login</button>
-                    <button className="bg-primary text-on-primary px-padding-lg py-2 rounded-lg text-label-sm font-label-sm hover:opacity-90 transition-all shadow-sm active:scale-95">
+                    <Link to="/auth/login" className="text-on-surface-variant hover:text-primary transition-colors text-label-sm font-label-sm px-padding-md py-2">Login</Link>
+                    <Link to="/auth/register" className="bg-primary text-on-primary px-padding-lg py-2 rounded-lg text-label-sm font-label-sm hover:opacity-90 transition-all shadow-sm active:scale-95">
                         Sign Up
-                    </button>
+                    </Link>
                 </div>
             </div>
         </header>

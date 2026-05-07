@@ -1,7 +1,7 @@
-import React from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate, } from 'react-router'
 
 const Login = () => {
+  const navigate = useNavigate()
   return (
     <div className="relative z-10 w-full max-w-[440px] bg-surface-container border border-outline-variant rounded-lg p-padding-lg shadow-2xl">
       <div className="mb-padding-lg space-y-padding-xs text-center">
@@ -26,7 +26,7 @@ const Login = () => {
           </div>
         </div>
         <div className="pt-padding-xs">
-          <button className="w-full bg-primary-container text-on-primary-container py-padding-sm rounded font-headline-md text-headline-md font-bold hover:opacity-90 active:opacity-80 transition-all shadow-lg flex items-center justify-center gap-padding-sm" type="submit">
+          <button onClick={()=> navigate("/play-ground")} className="w-full bg-primary-container text-on-primary-container py-padding-sm rounded font-headline-md text-headline-md font-bold hover:opacity-90 active:opacity-80 transition-all shadow-lg flex items-center justify-center gap-padding-sm" type="submit">
             <span className="material-symbols-outlined" data-icon="login">login</span>
             Login
           </button>

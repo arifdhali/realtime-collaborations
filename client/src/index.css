@@ -97,12 +97,3 @@
   --text-headline-lg--letter-spacing: -0.01em;
   --text-headline-lg--font-weight: 600;
 }
-
-
-input:focus{
-    outline: none;
-}
-
-input{
-    border-radius: 5px;
-}

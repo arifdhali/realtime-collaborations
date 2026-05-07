@@ -6,6 +6,8 @@ import PlayGround from './pages/PlayGround.tsx';
 import AuthLayout from './layout/Auth.layout.tsx';
 import Login from './pages/auth/Login.tsx';
 import Register from './pages/auth/Register.tsx';
+import './App.css'
+import App from './App.tsx';
 
 
 const router = createBrowserRouter([
@@ -24,9 +26,15 @@ const router = createBrowserRouter([
     ]
   },
   {
-    index: true,
-    path: "/home",
-    Component: Home,
+    path: "/",
+    Component: App,
+    children: [
+      {
+        index: true,
+        Component: Home,
+      },
+
+    ]
   },
   {
     path: "/play-ground",
