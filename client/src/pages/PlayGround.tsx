@@ -1,13 +1,29 @@
 import Editor from '@monaco-editor/react';
+import { Link } from 'react-router';
+import api from '../Api';
+import { useEffect } from 'react';
 const PlayGround = () => {
+  const getLoadingData = async () => {
+    try {
+      let res = await api.get("/room/play-ground");
+ 
+
+    } catch (err) {
+     }
+  }
+  useEffect(() => {
+    getLoadingData();
+  }, [])
   return (
 
     <>
       <div className="flex h-screen overflow-hidden">
         <aside className="w-sidebar-width bg-surface-container-low border-r border-outline-variant flex flex-col">
           <div className="p-padding-md border-b border-outline-variant flex items-center justify-between">
-            <h2 className="font-headline-md text-headline-md text-on-surface">Explorer</h2>
-            <span className="material-symbols-outlined text-outline text-sm">more_horiz</span>
+            <Link to={"/"}>
+              <p className="text-headline-lg font-headline-lg font-bold text-secondary dark:text-secondary">DevFlow IDE</p>
+            </Link>
+            <span className="cursor-pointer material-symbols-outlined text-outline text-sm">menu</span>
           </div>
           <div className="flex-1 overflow-y-auto">
             <div className="p-2 py-padding-sm text-label-sm font-label-sm text-outline uppercase tracking-wider">Project Alpha</div>

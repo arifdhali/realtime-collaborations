@@ -4,14 +4,15 @@ import dotenv from "dotenv";
 import { Server } from "socket.io";
 import { initSocket } from "./socket";
 import connectDB from "./config/db";
-
+  
 dotenv.config();
 const PORT = process.env.PORT;
 connectDB();
+console.log(process.env.CLIENT_URL);
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "*",
+        origin: process.env.CLIENT_URL,
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         credentials: true
     }

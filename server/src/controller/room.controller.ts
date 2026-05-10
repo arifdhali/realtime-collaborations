@@ -100,3 +100,15 @@ export const joinRoom = async (req: Request, res: Response, next: NextFunction) 
 
     }
 }
+
+export const playGround = async (req: Request, res: Response, next: NextFunction) => {
+
+
+    try {
+
+        return success(res, {}, "Playground route is working", 200);
+
+    } catch (err) {
+        next(err);
+    }
+}

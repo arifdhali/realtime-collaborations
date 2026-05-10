@@ -34,18 +34,15 @@ const Home = () => {
             </div>
             <div className="space-y-padding-lg relative z-10">
 
-              <div className="flex gap-padding-md border-b border-outline-variant mb-padding-lg">
-                <button className="pb-padding-sm text-primary font-bold border-b-2 border-primary transition-all">Create Room</button>
-                <button className="pb-padding-sm text-on-surface-variant hover:text-on-surface transition-all">Join Existing</button>
-              </div>
+         
 
               <div className="space-y-padding-md">
-                <h2 className="text-on-surface font-headline-md text-xl">Instantiate Session</h2>
+                <h2 className="text-on-surface font-headline-md text-xl">Create Room</h2>
                 <p className="text-on-surface-variant text-label-sm">Launch a new isolated environment with a dedicated code canvas and real-time cursor syncing.</p>
                 <div className="relative">
                   <label className="sr-only" htmlFor="environment-select">Select Environment</label>
                   <select className="w-full bg-surface-container-highest border border-outline-variant text-on-surface p-padding-md rounded-lg transition-all focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary appearance-none cursor-pointer" id="environment-select">
-                    <option value="node">Node.js</option>
+                    <option value="js">Javascript</option>
                     <option value="python">Python</option>
                     <option value="java">Java</option>
                     <option value="cpp">C++</option>

@@ -1,32 +1,82 @@
 import { Link, useNavigate, } from 'react-router'
+import * as yup from "yup";
+import { useFormik } from 'formik';
+import api from '../../Api';
+import toast from 'react-hot-toast';
+import { useState } from 'react';
 
+
+
+const validationSchemas = yup.object({
+  email: yup.string().email("Please enter a valid email address").required("Email is required"),
+  password: yup.string().min(8, "Password must be at least 8 characters").required("Password is required"),
+})
 const Login = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [passwordVisibility, setPasswordVisibility] = useState(false);
+
+  const loginFormik = useFormik({
+    initialValues: {
+      email: "",
+      password: ""
+    },
+    validationSchema: validationSchemas,
+    validateOnChange: false,
+    onSubmit: async (values) => {
+      try {
+        let res = await api.post("/auth/sign-in", values);
+        if (res.data.success) {
+          toast.success(res.data.message);
+           navigate("/play-ground");
+        }
+      } catch (err) {
+        toast.error(err.response.data.message);
+      }
+    }
+  });
+
+
   return (
-    <div className="relative z-10 w-full max-w-[440px] bg-surface-container border border-outline-variant rounded-lg p-padding-lg shadow-2xl">
+    <div className="relative z-10 w-full max-w-110 bg-surface-container border border-outline-variant rounded-lg p-padding-lg shadow-2xl">
       <div className="mb-padding-lg space-y-padding-xs text-center">
         <h1 className="font-headline-lg text-headline-lg text-on-surface">Welcome back</h1>
         <p className="font-body-md text-body-md text-on-surface-variant">Enter your credentials to access your workspace.</p>
       </div>
 
-      <form className="space-y-padding-md">
+      <form onSubmit={loginFormik.handleSubmit} className="space-y-padding-md">
         <div className="space-y-padding-xs">
           <label className="font-label-sm text-label-sm text-on-surface-variant" htmlFor="email">Email Address</label>
           <div className="relative">
-            <input className="w-full bg-surface-container-lowest border border-outline-variant rounded px-padding-md py-padding-sm font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container code-glow transition-all" id="email" placeholder="name@company.com" type="email" />
+            <input onChange={loginFormik.handleChange} onBlur={loginFormik.handleBlur} value={loginFormik.values.email} className="py-3 w-full bg-surface-container-lowest border border-outline-variant rounded px-padding-md  font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container code-glow transition-all" id="email" placeholder="name@company.com" type="email" />
           </div>
+          {
+            loginFormik.errors.email && (
+              <p className="font-label-sm text-label-sm text-error">{loginFormik.errors.email}</p>
+            )
+          }
         </div>
         <div className="space-y-padding-xs">
           <div className="flex justify-between items-center">
             <label className="font-label-sm text-label-sm text-on-surface-variant" htmlFor="password">Password</label>
-            <a className="font-label-sm text-label-sm text-primary hover:underline" href="#">Forgot Password?</a>
+            <Link className="font-label-sm text-label-sm text-primary hover:underline" to="/forgot-password">
+              Forgot Password?
+            </Link>
           </div>
           <div className="relative">
-            <input className="w-full bg-surface-container-lowest border border-outline-variant rounded px-padding-md py-padding-sm font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container code-glow transition-all" id="password" placeholder="••••••••" type="password" />
+            <input onChange={loginFormik.handleChange} onBlur={loginFormik.handleBlur} value={loginFormik.values.password} className="py-3 w-full bg-surface-container-lowest border border-outline-variant rounded px-padding-md  font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container code-glow transition-all" minLength={8} id="password" placeholder="••••••••" type={passwordVisibility ? "text" : "password"} />
+
+            <span onClick={() => setPasswordVisibility(!passwordVisibility)} className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-on-surface text-lg!">
+              visibility
+            </span>
           </div>
+          {
+            loginFormik.errors.password && (
+              <p className="font-label-sm text-label-sm text-error">{loginFormik.errors.password}</p>
+            )
+          }
         </div>
         <div className="pt-padding-xs">
-          <button onClick={()=> navigate("/play-ground")} className="w-full bg-primary-container text-on-primary-container py-padding-sm rounded font-headline-md text-headline-md font-bold hover:opacity-90 active:opacity-80 transition-all shadow-lg flex items-center justify-center gap-padding-sm" type="submit">
+          <button className="w-full bg-primary-container text-on-primary-container py-padding-sm rounded font-headline-md text-headline-md font-bold hover:opacity-90 active:opacity-80 transition-all shadow-lg flex items-center justify-center gap-padding-sm" type="submit">
             <span className="material-symbols-outlined" data-icon="login">login</span>
             Login
           </button>
@@ -34,9 +84,9 @@ const Login = () => {
       </form>
 
       <div className="my-padding-lg flex items-center gap-padding-md">
-        <div className="flex-grow h-[1px] bg-outline-variant"></div>
+        <div className="grow h-px bg-outline-variant"></div>
         <span className="font-label-sm text-label-sm text-outline uppercase tracking-wider">or continue with</span>
-        <div className="flex-grow h-[1px] bg-outline-variant"></div>
+        <div className="grow h-px bg-outline-variant"></div>
       </div>
 
       <div className="grid grid-cols-2 gap-padding-md">

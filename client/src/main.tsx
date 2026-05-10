@@ -8,7 +8,8 @@ import Login from './pages/auth/Login.tsx';
 import Register from './pages/auth/Register.tsx';
 import './App.css'
 import App from './App.tsx';
-
+import { Toaster } from 'react-hot-toast';
+<Toaster position='top-right' />
 
 const router = createBrowserRouter([
   {
@@ -44,6 +45,8 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById('root')!).render(
-  <RouterProvider router={router} />
-
+  <>
+    <RouterProvider router={router} />
+    <Toaster position='top-right' />
+  </>
 )

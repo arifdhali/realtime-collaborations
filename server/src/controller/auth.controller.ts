@@ -10,7 +10,12 @@ export const createAccount = async (req: Request, res: Response, next: NextFunct
 
     try {
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({
+            $or: [
+                { email },
+                { mobile }
+            ]
+        });
         if (user) {
             return next(new AppError("User already exists", 400));
         }
@@ -63,6 +68,12 @@ export const Singin = async (req: Request, res: Response, next: NextFunction) =>
             { _id: user.id },
             { $set: { last_access: new Date() } }
         )
+        res.cookie("auth_token", token, {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 1 * 24 * 60 * 60 * 1000
+        })
 
         success(res, { token, payload }, "Login successful", 200);
 

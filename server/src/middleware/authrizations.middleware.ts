@@ -5,13 +5,12 @@ import jwt from "jsonwebtoken";
 export const AuthorizationMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 
 
-
+    console.log(req.headers)
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return next(new AppError("Unauthorized: No token provided", 401))
     }
-
-    let token = authHeader.split(" ")[1];
+     let token = authHeader.split(" ")[1];
 
     if (!token) {
         return next(new AppError("Unauthorized: Invalid token", 401))
@@ -20,7 +19,7 @@ export const AuthorizationMiddleware = async (req: Request, res: Response, next:
         let decode = jwt.verify(token, process.env.JWT_SECRET_KEY as string) as any;
         req.user = decode;
         next();
-    } catch (err:any) {
+    } catch (err: any) {
         if (err.name === "TokenExpiredError") {
             return next(new AppError("Token expired. Please login again.", 401));
         }

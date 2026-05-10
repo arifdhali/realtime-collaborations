@@ -42,5 +42,10 @@ export const Sing_up_schema = Joi.object({
         "string.pattern.base": "Mobile must be 10 digits",
         "string.empty": "Mobile is required",
         "any.required": "Mobile is required"
+    }),
+    device_type: Joi.string().valid("web", "mobile").required().messages({
+        "any.only": "Device type must be either 'web' or 'mobile'",
+        "string.empty": "Device type is required",
+        "any.required": "Device type is required"
     })
 })

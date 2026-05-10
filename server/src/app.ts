@@ -3,8 +3,15 @@ import cors from "cors";
 import errorMiddleware from "./middleware/error.middleware";
 import routes from "./routes/index.routes";
 import AppError from "./utils/AppError";
+import dotenv from "dotenv";
 
+dotenv.config();
 const app = express();
+app.use(cors({
+    origin: process.env.CLIENT_URL,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    credentials: true
+}));
 
 
 app.use(express.urlencoded({ extended: true }));
