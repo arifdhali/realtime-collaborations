@@ -1,4 +1,26 @@
+import { useFormik } from "formik"
+import toast from "react-hot-toast"
+import api from "../Api"
+import { useEffect } from "react"
+
 const Home = () => {
+
+  const joinRoom = useFormik({
+    initialValues: {
+      room_id: "",
+      socketId: ""
+    },
+    onSubmit: async (values) => {
+      try {
+        let res = await api.post(`/room/${values.room_id}/join`,{
+          socketId: values.socketId
+        });
+       } catch (err) {
+        toast.error(err.response.data.message);
+      }
+    }
+  })
+
   return (
     <>
 
@@ -34,7 +56,7 @@ const Home = () => {
             </div>
             <div className="space-y-padding-lg relative z-10">
 
-         
+
 
               <div className="space-y-padding-md">
                 <h2 className="text-on-surface font-headline-md text-xl">Create Room</h2>
@@ -62,20 +84,20 @@ const Home = () => {
                 <div className="h-[1px] bg-outline-variant flex-1"></div>
               </div>
 
-              <div className="space-y-padding-md">
+              <form onSubmit={joinRoom.handleSubmit} className="space-y-padding-md">
                 <label className="block text-on-surface-variant text-label-sm font-label-sm">Connect via Room ID</label>
                 <div className="flex gap-padding-sm">
                   <div className="flex-1 relative">
-                    <input className="w-full bg-surface-container-lowest border border-outline-variant text-on-surface text-headline-md font-code-md px-padding-md py-padding-sm rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:opacity-30" maxLength={6} placeholder="000 000" type="text" />
-                    <div className="absolute right-padding-sm top-1/2 -translate-y-1/2">
-                      <span className="material-symbols-outlined text-outline text-body-md" data-icon="vpn_key">vpn_key</span>
+                    <input name="room_id" value={joinRoom.values.room_id} a onChange={joinRoom.handleChange} onBlur={joinRoom.handleBlur} className="py-3 w-full bg-surface-container-lowest border border-outline-variant rounded px-padding-md  font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container code-glow transition-all" placeholder="000 000" type="text" />
+                    <div className="absolute bg-surface-container-lowest pl-2 right-padding-sm top-1/2 -translate-y-1/2">
+                      <span className="material-symbols-outlined text-on-primary-container" data-icon="vpn_key">vpn_key</span>
                     </div>
                   </div>
-                  <button className="bg-primary-container text-on-primary-container px-padding-lg rounded-lg font-label-sm hover:opacity-90 transition-all active:scale-95">
+                  <button type="submit" className="cursor-pointer bg-primary-container text-on-primary-container px-padding-lg rounded-lg font-label-sm hover:opacity-90 transition-all active:scale-95">
                     Join
                   </button>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
         </div>
@@ -84,7 +106,7 @@ const Home = () => {
 
       <footer className="relative z-10 w-full px-padding-lg pb-padding-lg mt-auto">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-padding-md">
-          
+
           <div className="bg-surface-container border border-outline-variant p-padding-md rounded-lg hover:bg-surface-container-high transition-colors">
             <div className="text-secondary mb-padding-sm">
               <span className="material-symbols-outlined" >groups</span>
@@ -92,7 +114,7 @@ const Home = () => {
             <h4 className="text-on-surface font-label-sm font-bold">Live Presence</h4>
             <p className="text-on-surface-variant text-[11px] mt-1">See who is typing and where with low-latency cursor tracking and avatar highlights.</p>
           </div>
-          
+
           <div className="bg-surface-container border border-outline-variant p-padding-md rounded-lg hover:bg-surface-container-high transition-colors">
             <div className="text-primary mb-padding-sm">
               <span className="material-symbols-outlined">terminal</span>
@@ -100,7 +122,7 @@ const Home = () => {
             <h4 className="text-on-surface font-label-sm font-bold">Shared Terminal</h4>
             <p className="text-on-surface-variant text-[11px] mt-1">Execute code in a secure, sandboxed environment that everyone in the room can interact with.</p>
           </div>
-          
+
           <div className="bg-surface-container border border-outline-variant p-padding-md rounded-lg hover:bg-surface-container-high transition-colors">
             <div className="text-tertiary mb-padding-sm">
               <span className="material-symbols-outlined">history</span>

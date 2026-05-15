@@ -66,7 +66,7 @@ const Login = () => {
             <input onChange={loginFormik.handleChange} onBlur={loginFormik.handleBlur} value={loginFormik.values.password} className="py-3 w-full bg-surface-container-lowest border border-outline-variant rounded px-padding-md  font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container code-glow transition-all" minLength={8} id="password" placeholder="••••••••" type={passwordVisibility ? "text" : "password"} />
 
             <span onClick={() => setPasswordVisibility(!passwordVisibility)} className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-on-surface text-lg!">
-              visibility
+              {passwordVisibility ? "visibility_off" : "visibility"}
             </span>
           </div>
           {

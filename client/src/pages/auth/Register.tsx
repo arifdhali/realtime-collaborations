@@ -100,9 +100,9 @@ const Register = () => {
           <div>
             <label className="block font-label-sm text-label-sm text-on-surface-variant mb-1 ml-1" htmlFor="password">Password</label>
             <div className='relative'>
-              <input onChange={refFormik.handleChange} onBlur={refFormik.handleBlur} className="w-full bg-surface-container-lowest border border-outline-variant rounded px-padding-md py-3 font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container code-glow transition-all" id="password" placeholder="••••••••" type={passwordVisibility ? "text": "password"} />
-              <span onClick={()=>setPasswordVisibility(!passwordVisibility)} className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-on-surface text-lg!">
-                visibility
+              <input onChange={refFormik.handleChange} onBlur={refFormik.handleBlur} className="w-full bg-surface-container-lowest border border-outline-variant rounded px-padding-md py-3 font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container code-glow transition-all" id="password" placeholder="••••••••" type={passwordVisibility ? "text" : "password"} />
+              <span onClick={() => setPasswordVisibility(!passwordVisibility)} className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-on-surface text-lg!">
+                {passwordVisibility ? "visibility_off" : "visibility"}
               </span>
             </div>
             {

@@ -103,8 +103,17 @@ export const joinRoom = async (req: Request, res: Response, next: NextFunction) 
 
 export const playGround = async (req: Request, res: Response, next: NextFunction) => {
 
-
+    let { room_id } = req.query;
     try {
+
+        let room = await Room.findOne({
+            roomId: room_id,
+            status: true
+        }).populate("users.user_id","name -_id").select(
+            "-__v -createdAt -updatedAt"
+        ).lean();
+
+        console.log(room)
 
         return success(res, {}, "Playground route is working", 200);
 
