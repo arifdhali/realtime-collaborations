@@ -4,9 +4,10 @@ import errorMiddleware from "./middleware/error.middleware";
 import routes from "./routes/index.routes";
 import AppError from "./utils/AppError";
 import dotenv from "dotenv";
-
+import cookieParser from "cookie-parser";
 dotenv.config();
 const app = express();
+
 app.use(cors({
     origin: process.env.CLIENT_URL,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -16,7 +17,7 @@ app.use(cors({
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
-
+app.use(cookieParser())
 // app.use("/game",gameRoutes);
 
 app.use("/api", routes);

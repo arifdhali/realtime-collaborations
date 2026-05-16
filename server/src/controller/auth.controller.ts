@@ -75,7 +75,7 @@ export const Singin = async (req: Request, res: Response, next: NextFunction) =>
             maxAge: 1 * 24 * 60 * 60 * 1000
         })
 
-        success(res, { token, payload }, "Login successful", 200);
+        success(res, { token }, "Login successful", 200);
 
     } catch (err) {
         next(err);

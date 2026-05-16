@@ -27,7 +27,7 @@ const Login = () => {
         let res = await api.post("/auth/sign-in", values);
         if (res.data.success) {
           toast.success(res.data.message);
-           navigate("/play-ground");
+           navigate("/");
         }
       } catch (err) {
         toast.error(err.response.data.message);

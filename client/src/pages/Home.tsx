@@ -1,23 +1,49 @@
 import { useFormik } from "formik"
 import toast from "react-hot-toast"
 import api from "../Api"
-import { useEffect } from "react"
+import { io } from "socket.io-client"
+import { socket } from "../Socket"
+import { useEffect, useState } from "react"
+import { Link } from "react-router"
 
 const Home = () => {
+  const [joined, setJoined] = useState(false);
+
+  useEffect(() => {
+    socket.connect();
+    socket.emit("initial_page", {
+      room_id: "9817540f-4e7a-4f7c-8e0d-1675f8ea58d8"
+    });
+    socket.on("room_joined", (data) => {
+      setJoined(true);
+    });
+    return () => {
+      socket.off("initial_page");
+      socket.off("room_joined");
+    };
+  }, [])
 
   const joinRoom = useFormik({
     initialValues: {
       room_id: "",
       socketId: ""
     },
-    onSubmit: async (values) => {
-      try {
-        let res = await api.post(`/room/${values.room_id}/join`,{
-          socketId: values.socketId
-        });
-       } catch (err) {
-        toast.error(err.response.data.message);
+    validate(values) {
+      const errors: any = {};
+      if (!values.room_id) {
+        errors.room_id = "Room ID is required";
       }
+      return errors;
+    },
+    onSubmit: (values) => {
+      socket.emit("join_room", {
+        room_id: values.room_id,
+      });
+
+      socket.on("room_joined", () => {
+        setJoined(true);
+      })
+
     }
   })
 
@@ -84,20 +110,34 @@ const Home = () => {
                 <div className="h-[1px] bg-outline-variant flex-1"></div>
               </div>
 
-              <form onSubmit={joinRoom.handleSubmit} className="space-y-padding-md">
-                <label className="block text-on-surface-variant text-label-sm font-label-sm">Connect via Room ID</label>
-                <div className="flex gap-padding-sm">
-                  <div className="flex-1 relative">
-                    <input name="room_id" value={joinRoom.values.room_id} a onChange={joinRoom.handleChange} onBlur={joinRoom.handleBlur} className="py-3 w-full bg-surface-container-lowest border border-outline-variant rounded px-padding-md  font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container code-glow transition-all" placeholder="000 000" type="text" />
-                    <div className="absolute bg-surface-container-lowest pl-2 right-padding-sm top-1/2 -translate-y-1/2">
-                      <span className="material-symbols-outlined text-on-primary-container" data-icon="vpn_key">vpn_key</span>
+
+
+              {
+                joined ? (
+                  <Link to={`/play-ground`} className="cursor-pointer block bg-primary-container text-on-primary-container px-padding-lg py-3 text-center  rounded-lg font-label-sm w-full hover:opacity-90 transition-all active:scale-95">
+                    Go to Room
+                  </Link>
+                ) : (
+                  <form onSubmit={joinRoom.handleSubmit} className="">
+                    <label className="block text-on-surface-variant text-label-sm font-label-sm mb-1">Connect via Room ID</label>
+                    <div className="flex gap-padding-sm">
+                      <div className="flex-1 relative">
+                        <input name="room_id" value={joinRoom.values.room_id} onChange={joinRoom.handleChange} onBlur={joinRoom.handleBlur} className="py-3 w-full bg-surface-container-lowest border border-outline-variant rounded px-padding-md  font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary-container code-glow transition-all" placeholder="000 000" type="text" />
+                        <div className="absolute bg-surface-container-lowest pl-2 right-padding-sm top-1/2 -translate-y-1/2">
+                          <span className="material-symbols-outlined text-on-primary-container" data-icon="vpn_key">vpn_key</span>
+                        </div>
+                      </div>
+                      <button type="submit" className="cursor-pointer bg-primary-container text-on-primary-container px-padding-lg rounded-lg font-label-sm hover:opacity-90 transition-all active:scale-95">
+                        Join
+                      </button>
                     </div>
-                  </div>
-                  <button type="submit" className="cursor-pointer bg-primary-container text-on-primary-container px-padding-lg rounded-lg font-label-sm hover:opacity-90 transition-all active:scale-95">
-                    Join
-                  </button>
-                </div>
-              </form>
+                    <span className="text-red-500 text-sm">{joinRoom.touched.room_id && joinRoom.errors.room_id}</span>
+                  </form>
+                )
+              }
+
+
+
             </div>
           </div>
         </div>

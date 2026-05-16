@@ -4,8 +4,6 @@ import jwt from "jsonwebtoken";
 
 export const AuthorizationMiddleware = async (req: Request, res: Response, next: NextFunction) => {
 
-
-    console.log(req.headers)
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return next(new AppError("Unauthorized: No token provided", 403))
