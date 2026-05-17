@@ -1,9 +1,10 @@
 import { Outlet } from 'react-router'
 import Header from './components/header'
-import { Toaster } from 'react-hot-toast';
+import useAxiosInterceptor from './hooks/useAxiosInterceptor';
 
 function App() {
 
+  useAxiosInterceptor();
 
   return (
     <>

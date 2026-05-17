@@ -12,7 +12,7 @@ const roomSchema = new mongoose.Schema({
     },
     language: {
         type: String,
-        enum: ["javascript", "python", "java", "c++"],
+        enum: ["javascript", "python", "java", "cpp"],
         default: "javascript"
     },
     createdBy: {

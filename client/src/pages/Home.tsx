@@ -1,7 +1,6 @@
 import { useFormik } from "formik"
 import toast from "react-hot-toast"
 import api from "../Api"
-import { io } from "socket.io-client"
 import { socket } from "../Socket"
 import { useEffect, useState } from "react"
 import { Link } from "react-router"
@@ -9,7 +8,7 @@ import { Link } from "react-router"
 const Home = () => {
   const [joined, setJoined] = useState(false);
 
-  useEffect(() => {
+   useEffect(() => {
     socket.connect();
     socket.emit("initial_page", {
       room_id: "9817540f-4e7a-4f7c-8e0d-1675f8ea58d8"
@@ -46,7 +45,21 @@ const Home = () => {
 
     }
   })
+  const creatRoom = useFormik({
+    initialValues: {
+      language: "javascript"
+    },
+    onSubmit: async (values) => {
+      try {
+        let res = await api.post("/room/create", values);
 
+      } catch (err) {
+        navigate()
+        toast.error(err.response?.data?.message || "Failed to create room");
+      }
+
+    }
+  })
   return (
     <>
 
@@ -84,13 +97,13 @@ const Home = () => {
 
 
 
-              <div className="space-y-padding-md">
+              <form onSubmit={creatRoom.handleSubmit} className="space-y-padding-md">
                 <h2 className="text-on-surface font-headline-md text-xl">Create Room</h2>
                 <p className="text-on-surface-variant text-label-sm">Launch a new isolated environment with a dedicated code canvas and real-time cursor syncing.</p>
                 <div className="relative">
                   <label className="sr-only" htmlFor="environment-select">Select Environment</label>
-                  <select className="w-full bg-surface-container-highest border border-outline-variant text-on-surface p-padding-md rounded-lg transition-all focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary appearance-none cursor-pointer" id="environment-select">
-                    <option value="js">Javascript</option>
+                  <select name="language" value={creatRoom.values.language} onChange={creatRoom.handleChange} className="w-full cursor-pointer bg-surface-container-highest border border-outline-variant text-on-surface p-padding-md rounded-lg transition-all focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary appearance-none cursor-pointer" id="environment-select">
+                    <option value="javascript">Javascript</option>
                     <option value="python">Python</option>
                     <option value="java">Java</option>
                     <option value="cpp">C++</option>
@@ -99,11 +112,11 @@ const Home = () => {
                     <span className="material-symbols-outlined text-outline" data-icon="expand_more">expand_more</span>
                   </div>
                 </div>
-                <button className="w-full bg-secondary-container text-on-secondary-container flex items-center justify-center gap-padding-sm py-padding-md rounded-lg font-headline-md hover:brightness-110 transition-all group/btn active:scale-[0.98]">
-                  <span className="material-symbols-outlined" data-icon="play_arrow" style={{ fontVariationSettings: "'FILL' 1;" }}>play_arrow</span>
+                <button type="submit" className="w-full bg-secondary-container text-on-secondary-container flex items-center justify-center gap-padding-sm py-padding-md rounded-lg font-headline-md hover:brightness-110 transition-all group/btn active:scale-[0.98]">
+                  <span className="material-symbols-outlined" data-icon="play_arrow">play_arrow</span>
                   Create New Room
                 </button>
-              </div>
+              </form>
               <div className="flex items-center gap-padding-md py-padding-sm">
                 <div className="h-[1px] bg-outline-variant flex-1"></div>
                 <span className="text-outline text-label-sm uppercase font-bold">OR</span>

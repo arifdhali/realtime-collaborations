@@ -12,6 +12,10 @@ export const createRoom = async (req: Request, res: Response, next: NextFunction
     try {
         const { language } = req.body;
         const { id } = req.user;
+        if (!id) {
+            return next(new AppError("User id not found", 401));
+        }
+
         const isActiveUser = await User.findOne({ _id: id, status: true })
 
         if (!isActiveUser) {
@@ -77,9 +81,9 @@ export const getRoomById = async (req: Request, res: Response, next: NextFunctio
 
 export const joinRoom = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        
 
-        
+
+
 
     } catch (err) {
         next(err);
@@ -95,7 +99,7 @@ export const playGround = async (req: Request, res: Response, next: NextFunction
         let room = await Room.findOne({
             roomId: room_id,
             status: true
-        }).populate("users.user_id","name -_id").select(
+        }).populate("users.user_id", "name -_id").select(
             "-__v -createdAt -updatedAt"
         ).lean();
 

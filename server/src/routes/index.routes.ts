@@ -7,7 +7,7 @@ import { AuthorizationMiddleware } from "@/middleware/authrizations.middleware";
 const router = Router();
 
 router.use("/auth", authRoutes);
-router.use("/user",AuthorizationMiddleware, userRoutes);
-router.use("/room",  roomRoute);
+router.use("/user", AuthorizationMiddleware, userRoutes);
+router.use("/room", AuthorizationMiddleware, roomRoute);
 
 export default router;
