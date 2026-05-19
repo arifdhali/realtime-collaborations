@@ -5,6 +5,21 @@ import { User } from "@/models/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+
+export const selfController = async (req: Request, res: Response, next: NextFunction) => {
+
+    try {
+        console.log(req.user.id)
+        const user = await User.findOne({ _id: req.user.id }).select("_id name email");
+        success(res, user, "User retrived successful", 200);
+    } catch (err) {
+        next(err);
+    }
+
+
+}
+
+
 export const createAccount = async (req: Request, res: Response, next: NextFunction) => {
     const { name, email, password, mobile } = req.body;
 

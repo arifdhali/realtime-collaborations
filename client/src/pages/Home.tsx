@@ -3,12 +3,13 @@ import toast from "react-hot-toast"
 import api from "../Api"
 import { socket } from "../Socket"
 import { useEffect, useState } from "react"
-import { Link } from "react-router"
+import { Link, useNavigate } from "react-router"
 
 const Home = () => {
   const [joined, setJoined] = useState(false);
+  const navigate = useNavigate();
 
-   useEffect(() => {
+  useEffect(() => {
     socket.connect();
     socket.emit("initial_page", {
       room_id: "9817540f-4e7a-4f7c-8e0d-1675f8ea58d8"
@@ -52,9 +53,11 @@ const Home = () => {
     onSubmit: async (values) => {
       try {
         let res = await api.post("/room/create", values);
-
+        if (res.data.success) {
+          toast.success(res.data.message)
+          navigate("/play-ground");
+        }
       } catch (err) {
-        navigate()
         toast.error(err.response?.data?.message || "Failed to create room");
       }
 
@@ -62,7 +65,6 @@ const Home = () => {
   })
   return (
     <>
-
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center p-padding-lg">
         <div className="w-full max-w-4xl grid md:grid-cols-2 gap-padding-lg">
 
@@ -155,8 +157,6 @@ const Home = () => {
           </div>
         </div>
       </main>
-
-
       <footer className="relative z-10 w-full px-padding-lg pb-padding-lg mt-auto">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-padding-md">
 

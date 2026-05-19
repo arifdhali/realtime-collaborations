@@ -9,6 +9,8 @@ import Register from './pages/auth/Register.tsx';
 import './App.css'
 import App from './App.tsx';
 import { Toaster } from 'react-hot-toast';
+import { Provider } from 'react-redux';
+import { store } from './store/store.ts';
 <Toaster position='top-right' />
 
 const router = createBrowserRouter([
@@ -45,8 +47,8 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById('root')!).render(
-  <>
+  <Provider store={store}>
     <RouterProvider router={router} />
     <Toaster position='top-right' />
-  </>
+  </Provider>
 )
