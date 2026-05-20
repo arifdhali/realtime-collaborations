@@ -11,38 +11,53 @@ import App from './App.tsx';
 import { Toaster } from 'react-hot-toast';
 import { Provider } from 'react-redux';
 import { store } from './store/store.ts';
+import ProtectedRoute from './components/ProtectedRoute.tsx';
+import NormalRoutes from './components/NormalRoutes.tsx';
 <Toaster position='top-right' />
 
 const router = createBrowserRouter([
   {
-    path: "/auth",
-    Component: AuthLayout,
+    element: <NormalRoutes />,
     children: [
       {
-        index: true,
-        element: <Navigate to="login" replace />,
+        path: "/auth",
+        Component: AuthLayout,
+        children: [
+          {
+            index: true,
+            element: <Navigate to="login" replace />,
+          },
+          {
+            path: "login", Component: Login
+          },
+          { path: "register", Component: Register }
+        ]
       },
       {
-        path: "login", Component: Login
-      },
-      { path: "register", Component: Register }
-    ]
-  },
-  {
-    path: "/",
-    Component: App,
-    children: [
-      {
-        index: true,
-        Component: Home,
-      },
+        path: "/",
+        Component: App,
+        children: [
+          {
+            index: true,
+            Component: Home,
+          },
 
+        ]
+      },
     ]
   },
+
+  // protected routes
   {
-    path: "/play-ground",
-    Component: PlayGround,
-  },
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "/play-ground",
+        Component: PlayGround,
+      },
+    ]
+  }
+
 
 ]);
 

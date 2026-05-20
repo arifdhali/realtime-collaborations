@@ -13,14 +13,17 @@ const Header = () => {
                 <div className="flex items-center gap-padding-md">
 
                     {!isAuthenticated ? (
-                        <Link to="/auth/login" className="text-on-surface-variant hover:text-primary transition-colors text-label-sm font-label-sm px-padding-md py-2">Login</Link>
+                        <>
+                            <Link to="/auth/login" className="text-on-surface-variant hover:text-primary transition-colors text-label-sm font-label-sm px-padding-md py-2">Login</Link>
+                            <Link to="/auth/register" className="bg-primary text-on-primary px-padding-lg py-2 rounded-lg text-label-sm font-label-sm hover:opacity-90 transition-all shadow-sm active:scale-95">
+                                Sign Up
+                            </Link>
+                        </>
                     ) : (
                         <Link to="/play-ground" className="text-white bg-green-700 rounded-lg  transition-colors text-label-sm font-label-sm px-padding-md py-2">Play Ground</Link>
                     )
                     }
-                    <Link to="/auth/register" className="bg-primary text-on-primary px-padding-lg py-2 rounded-lg text-label-sm font-label-sm hover:opacity-90 transition-all shadow-sm active:scale-95">
-                        Sign Up
-                    </Link>
+
                 </div>
             </div>
         </header>

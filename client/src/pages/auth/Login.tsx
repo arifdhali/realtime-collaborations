@@ -4,7 +4,6 @@ import { useFormik } from 'formik';
 import api from '../../Api';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
 
 
 
@@ -31,7 +30,8 @@ const Login = () => {
         let res = await api.post("/auth/sign-in", values);
         if (res.data.success) {
           toast.success(res.data.message);
-          navigate(location.state.from.pathname, { replace: true });
+          
+          navigate(location.state ? location.state.from.pathname : "/", { replace: true });
         }
 
       } catch (err) {
@@ -90,7 +90,7 @@ const Login = () => {
             }
           </div>
           <div className="pt-padding-xs">
-            <button className="w-full bg-primary-container text-on-primary-container py-padding-sm rounded font-headline-md text-headline-md font-bold hover:opacity-90 active:opacity-80 transition-all shadow-lg flex items-center justify-center gap-padding-sm" type="submit">
+            <button className="w-full cursor-pointer bg-primary-container text-on-primary-container py-padding-sm rounded font-headline-md text-headline-md font-bold hover:opacity-90 active:opacity-80 transition-all shadow-lg flex items-center justify-center gap-padding-sm" type="submit">
               <span className="material-symbols-outlined" data-icon="login">login</span>
               Login
             </button>

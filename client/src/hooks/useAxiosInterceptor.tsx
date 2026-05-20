@@ -7,8 +7,7 @@ const useAxiosInterceptor = () => {
     let navigate = useNavigate();
     let location = useLocation();
 
-
-    useEffect(() => {
+     useEffect(() => {
         let interceptor = api.interceptors.response.use(
             (response) => response,
             (error) => {

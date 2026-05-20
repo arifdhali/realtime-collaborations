@@ -4,6 +4,7 @@ import api from "../Api"
 import { socket } from "../Socket"
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router"
+import { useSelector } from "react-redux"
 
 const Home = () => {
   const [joined, setJoined] = useState(false);
@@ -22,6 +23,8 @@ const Home = () => {
       socket.off("room_joined");
     };
   }, [])
+
+
 
   const joinRoom = useFormik({
     initialValues: {
@@ -52,14 +55,15 @@ const Home = () => {
     },
     onSubmit: async (values) => {
       try {
+
         let res = await api.post("/room/create", values);
         if (res.data.success) {
           toast.success(res.data.message)
           navigate("/play-ground");
         }
       } catch (err) {
-        toast.error(err.response?.data?.message || "Failed to create room");
-      }
+        navigate("/auth/login");
+       }
 
     }
   })

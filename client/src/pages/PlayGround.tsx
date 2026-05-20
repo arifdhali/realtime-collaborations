@@ -6,10 +6,9 @@ const PlayGround = () => {
   const getLoadingData = async () => {
     try {
       let res = await api.get("/room/play-ground");
- 
 
     } catch (err) {
-     }
+    }
   }
   useEffect(() => {
     getLoadingData();
