@@ -82,8 +82,40 @@ export const getRoomById = async (req: Request, res: Response, next: NextFunctio
 export const joinRoom = async (req: Request, res: Response, next: NextFunction) => {
     try {
 
+        const { room_id } = req.body;
 
+        if (room_id !== req.params.room_id) {
+            throw new AppError("Enter correct room id", 404);
+        }
 
+        let room = await Room.findOne({ roomId: room_id, status: true });
+
+        if (!room) {
+            throw new AppError("Room not found", 404);
+        }
+        let totalUsersIn = room.users.length;
+        if (totalUsersIn > room.limit_users) {
+            throw new AppError("Room members limit reached, contact Room creator", 409);
+        }
+
+        let { id } = req.user;
+
+        let inserted = await Room.updateOne(
+            {
+                roomId: room_id,
+                status: true
+            },
+            {
+                $addToSet: {
+                    users: {
+                        user_id: id
+                    }
+                }
+
+            }
+        )
+
+        success(res, room, "Room joined successful", 200);
 
     } catch (err) {
         next(err);

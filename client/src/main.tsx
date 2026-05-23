@@ -13,8 +13,7 @@ import { Provider } from 'react-redux';
 import { store } from './store/store.ts';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 import NormalRoutes from './components/NormalRoutes.tsx';
-<Toaster position='top-right' />
-
+ 
 const router = createBrowserRouter([
   {
     element: <NormalRoutes />,

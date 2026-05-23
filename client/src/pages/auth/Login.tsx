@@ -4,6 +4,8 @@ import { useFormik } from 'formik';
 import api from '../../Api';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../features/authSlice';
 
 
 
@@ -14,6 +16,7 @@ const validationSchemas = yup.object({
 const Login = () => {
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [passwordVisibility, setPasswordVisibility] = useState(false);
 
   let location = useLocation();
@@ -30,7 +33,7 @@ const Login = () => {
         let res = await api.post("/auth/sign-in", values);
         if (res.data.success) {
           toast.success(res.data.message);
-          
+          dispatch(setUser(null))
           navigate(location.state ? location.state.from.pathname : "/", { replace: true });
         }
 

@@ -10,26 +10,25 @@ const Home = () => {
   const [joined, setJoined] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    socket.connect();
-    socket.emit("initial_page", {
-      room_id: "9817540f-4e7a-4f7c-8e0d-1675f8ea58d8"
-    });
-    socket.on("room_joined", (data) => {
-      setJoined(true);
-    });
-    return () => {
-      socket.off("initial_page");
-      socket.off("room_joined");
-    };
-  }, [])
+  // useEffect(() => {
+  //   socket.connect();
+  //   socket.emit("initial_page", {
+  //     room_id: "9817540f-4e7a-4f7c-8e0d-1675f8ea58d8"
+  //   });
+  //   socket.on("room_joined", (data) => {
+  //     setJoined(true);
+  //   });
+  //   return () => {
+  //     socket.off("initial_page");
+  //     socket.off("room_joined");
+  //   };
+  // }, [])
 
 
 
   const joinRoom = useFormik({
     initialValues: {
       room_id: "",
-      socketId: ""
     },
     validate(values) {
       const errors: any = {};
@@ -38,14 +37,27 @@ const Home = () => {
       }
       return errors;
     },
-    onSubmit: (values) => {
-      socket.emit("join_room", {
-        room_id: values.room_id,
-      });
+    onSubmit: async (values) => {
 
-      socket.on("room_joined", () => {
-        setJoined(true);
-      })
+      try {
+
+        let res = await api.post(`/room/${values.room_id}/join`, values);
+
+        if (res.data.success) {
+          // navigate("/play-ground");
+          toast.success(res.data.message);
+        }
+
+      } catch (err) {
+        toast.error(err.response.data.message);
+      }
+      // socket.emit("join_room", {
+      //   room_id: values.room_id,
+      // });
+
+      // socket.on("room_joined", () => {
+      //   setJoined(true);
+      // })
 
     }
   })
@@ -59,11 +71,11 @@ const Home = () => {
         let res = await api.post("/room/create", values);
         if (res.data.success) {
           toast.success(res.data.message)
-          navigate("/play-ground");
+
         }
       } catch (err) {
         navigate("/auth/login");
-       }
+      }
 
     }
   })

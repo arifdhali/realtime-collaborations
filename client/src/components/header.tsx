@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux"
 import { Link } from "react-router"
+import { Avatar, Menu, Portal } from "@chakra-ui/react"
 
 const Header = () => {
     const { isAuthenticated } = useSelector((state) => state?.auth)
@@ -20,7 +21,10 @@ const Header = () => {
                             </Link>
                         </>
                     ) : (
-                        <Link to="/play-ground" className="text-white bg-green-700 rounded-lg  transition-colors text-label-sm font-label-sm px-padding-md py-2">Play Ground</Link>
+                        <>
+                            <Link to="/play-ground" className="text-white bg-green-700 rounded-lg  transition-colors text-label-sm font-label-sm px-padding-md py-2">Play Ground</Link>
+                           
+                        </>
                     )
                     }
 

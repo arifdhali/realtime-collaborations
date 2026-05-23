@@ -1,6 +1,5 @@
 import { Outlet, useNavigate } from 'react-router'
 import Header from './components/header'
-import useAxiosInterceptor from './hooks/useAxiosInterceptor';
  
 
 function App() {
@@ -9,8 +8,10 @@ function App() {
 
   return (
     <>
-      <Header />
-      <Outlet />
+      {/* <Provider> */}
+        <Header />
+        <Outlet />
+      {/* </Provider> */}
     </>
   )
 }
