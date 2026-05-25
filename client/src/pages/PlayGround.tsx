@@ -1,11 +1,18 @@
 import Editor from '@monaco-editor/react';
-import { Link } from 'react-router';
+import { Link, useParams, useSearchParams } from 'react-router';
 import api from '../Api';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 const PlayGround = () => {
+  const [searchParams] = useSearchParams();
+
+  const [code, setCode] = useState("// some comment");
   const getLoadingData = async () => {
     try {
-      let res = await api.get("/room/play-ground");
+      let res = await api.get("/room/play-ground", {
+        params: {
+          room_id: searchParams.get("room_id")
+        }
+      });
 
     } catch (err) {
     }
@@ -13,6 +20,9 @@ const PlayGround = () => {
   useEffect(() => {
     getLoadingData();
   }, [])
+
+
+
   return (
 
     <>
@@ -148,7 +158,7 @@ const PlayGround = () => {
             </div>
           </div>
           <div>
-            <Editor height="90vh" defaultLanguage="javascript" defaultValue="// some comment" theme="vs-dark"
+            <Editor value={code} onChange={(value) => setCode(value || "")} height="90vh" defaultLanguage="javascript" defaultValue="// some comment" theme="vs-dark"
             />;
           </div>
         </div>

@@ -44,7 +44,7 @@ const Home = () => {
         let res = await api.post(`/room/${values.room_id}/join`, values);
 
         if (res.data.success) {
-          // navigate("/play-ground");
+          navigate("/play-ground?room_id=" + values.room_id);
           toast.success(res.data.message);
         }
 

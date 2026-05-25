@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux"
 import { Link } from "react-router"
-import { Avatar, Menu, Portal } from "@chakra-ui/react"
-
+ 
 const Header = () => {
     const { isAuthenticated } = useSelector((state) => state?.auth)
 

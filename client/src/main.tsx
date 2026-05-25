@@ -12,11 +12,11 @@ import { Toaster } from 'react-hot-toast';
 import { Provider } from 'react-redux';
 import { store } from './store/store.ts';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
-import NormalRoutes from './components/NormalRoutes.tsx';
- 
+import AuthInitializer from './components/AuthInitializer.tsx';
+
 const router = createBrowserRouter([
   {
-    element: <NormalRoutes />,
+    element: <AuthInitializer />,
     children: [
       {
         path: "/auth",
@@ -43,19 +43,18 @@ const router = createBrowserRouter([
 
         ]
       },
+      {
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: "/play-ground",
+            Component: PlayGround,
+          },
+        ]
+      }
+
     ]
   },
-
-  // protected routes
-  {
-    element: <ProtectedRoute />,
-    children: [
-      {
-        path: "/play-ground",
-        Component: PlayGround,
-      },
-    ]
-  }
 
 
 ]);
