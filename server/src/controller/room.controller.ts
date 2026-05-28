@@ -5,6 +5,12 @@ import { User } from "@/models/User";
 import AppError from "@/utils/AppError";
 import crypto from "crypto";
 import mongoose from "mongoose";
+import path from "path";
+import { cwd } from "process";
+import { exec } from "child_process";
+import fs from "fs";
+import util from "util";
+const execute = util.promisify(exec);
 
 export const createRoom = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -131,6 +137,80 @@ export const joinRoom = async (req: Request, res: Response, next: NextFunction) 
 
     }
 }
+export const runCode = async (req: Request, res: Response, next: NextFunction) => {
+
+    const { code, language, roomId } = req.body;
+    if (!code || !language) {
+        return res.status(400).json({
+            success: false,
+            output: "Code and language are required"
+        });
+    }
+
+
+    try {
+        let tempDir = path.join(cwd(), "src/temp");
+
+        if (!fs.existsSync(tempDir)) {
+            fs.mkdirSync(tempDir, { recursive: true })
+        }
+
+
+        try {
+            let fileCommand = fileExecutions(code, language,roomId);
+            const { stdout, stderr } = await execute(fileCommand);
+            if (stderr) {
+                return res.json({
+                    success: false,
+                    output: stderr
+                });
+            }
+            return res.json({
+                success: true,
+                output: stdout || "Code executed successfully"
+            });
+        } catch (err) {
+
+            return res.json({
+                success: false,
+                output: err.stderr || err.message
+            });
+        }
+
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            output: err.message
+        });
+    }
+
+}
+
+function fileExecutions(code, language,roomID) {
+    let filePath = "";
+    let command = "";
+
+    switch (language) {
+
+        case "python":
+            let folder = makeFolderForLanguage("python");
+            filePath = path.join(folder, `${roomID}.py`);
+            fs.writeFileSync(filePath, code);
+            command = `python "${filePath}"`;
+            return command;
+        default:
+            console.log('default')
+    }
+
+}
+
+function makeFolderForLanguage(lang) {
+    let folderPath = path.join(cwd(), `src/temp/${lang}`);
+    if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath, { recursive: true })
+    }
+    return folderPath;
+}
 
 export const playGround = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -153,7 +233,7 @@ export const playGround = async (req: Request, res: Response, next: NextFunction
                 name: u.user_id.name
             }
         }));
-        
+
         if (!room) {
             return next(new AppError("Room not found", 404));
 
