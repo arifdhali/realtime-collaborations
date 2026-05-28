@@ -4,6 +4,7 @@ import { Room } from "@/models/Room";
 import { User } from "@/models/User";
 import AppError from "@/utils/AppError";
 import crypto from "crypto";
+import mongoose from "mongoose";
 
 export const createRoom = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -94,11 +95,19 @@ export const joinRoom = async (req: Request, res: Response, next: NextFunction) 
             throw new AppError("Room not found", 404);
         }
         let totalUsersIn = room.users.length;
-        if (totalUsersIn > room.limit_users) {
+
+        if (totalUsersIn >= room.limit_users) {
             throw new AppError("Room members limit reached, contact Room creator", 409);
         }
 
+
         let { id } = req.user;
+        // let isAlreadyIn = room.users.some((v) => v.user_id?.toString() == id);
+
+        // if (isAlreadyIn) {
+        //     throw new AppError("User already joined", 409);
+
+        // }
 
         let inserted = await Room.updateOne(
             {
@@ -108,7 +117,7 @@ export const joinRoom = async (req: Request, res: Response, next: NextFunction) 
             {
                 $addToSet: {
                     users: {
-                        user_id: id
+                        user_id: new mongoose.Types.ObjectId(id)
                     }
                 }
 
@@ -125,8 +134,8 @@ export const joinRoom = async (req: Request, res: Response, next: NextFunction) 
 
 export const playGround = async (req: Request, res: Response, next: NextFunction) => {
 
-    let { room_id } = req.query;
-    if(!room_id || typeof room_id !== "string"){
+    let { room_id } = req.params;
+    if (!room_id || typeof room_id !== "string") {
         return next(new AppError("Room id is required", 400));
     }
     try {
@@ -138,8 +147,20 @@ export const playGround = async (req: Request, res: Response, next: NextFunction
             "-__v -createdAt -updatedAt"
         ).lean();
 
+        room.users = room.users.map((u) => ({
+            user_id: {
+                id: u.user_id._id,
+                name: u.user_id.name
+            }
+        }));
+        
+        if (!room) {
+            return next(new AppError("Room not found", 404));
 
-        return success(res, { room }, "Playground route is working", 200);
+        }
+        room.total_users = room.users.length;
+
+        return success(res, room, "Playground retrived successful", 200);
 
     } catch (err) {
         next(err);

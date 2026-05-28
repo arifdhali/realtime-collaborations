@@ -1,10 +1,8 @@
 import { useFormik } from "formik"
 import toast from "react-hot-toast"
 import api from "../Api"
-import { socket } from "../Socket"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Link, useNavigate } from "react-router"
-import { useSelector } from "react-redux"
 
 const Home = () => {
   const [joined, setJoined] = useState(false);
@@ -44,11 +42,14 @@ const Home = () => {
         let res = await api.post(`/room/${values.room_id}/join`, values);
 
         if (res.data.success) {
-          navigate("/play-ground?room_id=" + values.room_id);
+          navigate(`/play-ground/${values.room_id}`);
           toast.success(res.data.message);
         }
 
       } catch (err) {
+        if (err.response.status == 403) {
+          navigate("/auth/login");``
+        }
         toast.error(err.response.data.message);
       }
       // socket.emit("join_room", {

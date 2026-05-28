@@ -22,6 +22,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.4.1",
     "socket.io": "^4.8.3",
+    "text-to-avatar": "^2.2.0",
     "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {

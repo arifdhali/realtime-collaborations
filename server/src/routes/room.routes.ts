@@ -7,6 +7,6 @@ roomRoute.get("/list", getRooms)
 roomRoute.post("/:room_id/join", joinRoom)
 roomRoute.post("/create", createRoom);
 
-roomRoute.get("/play-ground",playGround)
+roomRoute.get("/play-ground/:room_id",playGround)
 
 export default roomRoute;

@@ -23,8 +23,9 @@ const roomSchema = new mongoose.Schema({
     },
     users: [
         {
+            _id: false,
             user_id: {
-                type:Schema.Types.ObjectId,
+                type: Schema.Types.ObjectId,
                 ref: "User"
             }
         }
@@ -33,8 +34,8 @@ const roomSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    limit_users:{
-        type:Number,
+    limit_users: {
+        type: Number,
         default: 5
     }
 }, { timestamps: true })

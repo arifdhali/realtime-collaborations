@@ -1,27 +1,32 @@
 import Editor from '@monaco-editor/react';
-import { Link, useParams, useSearchParams } from 'react-router';
+import { Link, useNavigate, useParams, } from 'react-router';
 import api from '../Api';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 const PlayGround = () => {
-  const [searchParams] = useSearchParams();
-
+  const { room_id } = useParams();
+  const navigate = useNavigate();
   const [code, setCode] = useState("// some comment");
+  const [room, setRoom] = useState();
   const getLoadingData = async () => {
     try {
-      let res = await api.get("/room/play-ground", {
-        params: {
-          room_id: searchParams.get("room_id")
-        }
-      });
-
+      let res = await api.get(`/room/play-ground/${room_id}`);
+      if (res.data.success) {
+        setRoom(res.data.data)
+        setCode(res.data.data.code)
+      }
     } catch (err) {
+      toast.error(err.response.data.message);
+      if (err.response.status == 404 || err.response.status == 400) {
+        navigate("/auth/login");
+      }
     }
   }
   useEffect(() => {
     getLoadingData();
   }, [])
 
-
+  console.log(room)
 
   return (
 
@@ -55,24 +60,27 @@ const PlayGround = () => {
               <span>Active Users</span>
               <span className="text-secondary flex items-center gap-1">
                 <span className="w-2 h-2 rounded-full bg-secondary"></span>
-                <span className="text-[10px]">3 Live</span>
+                <span className="text-[10px]">{room?.total_users} Live</span>
               </span>
             </div>
             <div className="p-2 space-y-padding-sm py-padding-sm">
 
-              <div className="flex items-center gap-3 p-padding-xs hover:bg-surface-container rounded-lg transition-colors cursor-pointer group">
-                <div className="relative">
-                  <img alt="Sarah" className="w-8 h-8 rounded-full border border-outline-variant" data-alt="A professional headshot of a female software engineer with a friendly expression. She is in a modern office setting with soft, ambient lighting that highlights her features. The aesthetic is clean and high-tech, using a palette of soft greys and vibrant mint green accents, reflecting a focused and collaborative digital workspace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBndXxvJX8qOiVEg8vWO21RqLRfSQddC9XcbxV8-i4yNRMHb7vOj-nCF26Kdzz1UcaL9z5w8EJMv7lFKpl8IUKcFiNPQAjkdZtpQf5wx3ifmR5sRPaNVaE0yTCuWfae5mlInOrCNLv1Cq225VcumJqG9cT0cvgjgX2bZ7VUpFPKLs3wAA20Dc-ac3YDhgE58XEfQdxev6VO9unQsXoMzEvNLkQshki4fah7G6T7M6pyiiSuCWvxNGMGFArF2WGapmHzj7MqOoo74Jzw" />
-                  <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-secondary border-2 border-surface-container-low rounded-full"></div>
-                </div>
-                <div className="flex-1 overflow-hidden">
-                  <p className="text-body-md font-body-md text-on-surface truncate">Sarah</p>
-                  <p className="text-label-sm font-label-sm text-outline truncate">Editing main.js</p>
-                </div>
-                <span className="material-symbols-outlined text-tertiary opacity-0 group-hover:opacity-100 transition-opacity">edit</span>
-              </div>
+              {
+                room?.users.length > 0 && room.users.map((user) => (
+                  <div className="flex items-center gap-3 p-padding-xs hover:bg-surface-container rounded-lg transition-colors cursor-pointer group">
+                    <div className="relative">
+                      <img alt="Sarah" className="w-8 h-8 rounded-full border border-outline-variant" data-alt="A professional headshot of a female software engineer with a friendly expression. She is in a modern office setting with soft, ambient lighting that highlights her features. The aesthetic is clean and high-tech, using a palette of soft greys and vibrant mint green accents, reflecting a focused and collaborative digital workspace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBndXxvJX8qOiVEg8vWO21RqLRfSQddC9XcbxV8-i4yNRMHb7vOj-nCF26Kdzz1UcaL9z5w8EJMv7lFKpl8IUKcFiNPQAjkdZtpQf5wx3ifmR5sRPaNVaE0yTCuWfae5mlInOrCNLv1Cq225VcumJqG9cT0cvgjgX2bZ7VUpFPKLs3wAA20Dc-ac3YDhgE58XEfQdxev6VO9unQsXoMzEvNLkQshki4fah7G6T7M6pyiiSuCWvxNGMGFArF2WGapmHzj7MqOoo74Jzw" />
+                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-secondary border-2 border-surface-container-low rounded-full"></div>
+                    </div>
+                    <p className="text-body-md font-body-md text-on-surface truncate">{user?.user_id?.name}</p>
+                    <span className="material-symbols-outlined text-tertiary opacity-0 group-hover:opacity-100 transition-opacity">edit</span>
+                  </div>
 
-              <div className="flex items-center gap-3 p-padding-xs hover:bg-surface-container rounded-lg transition-colors cursor-pointer group">
+                ))
+
+              }
+
+              {/* <div className="flex items-center gap-3 p-padding-xs hover:bg-surface-container rounded-lg transition-colors cursor-pointer group">
                 <div className="relative">
                   <img alt="Alex" className="w-8 h-8 rounded-full border-2 border-primary" data-alt="A close-up portrait of a male developer in a dark room illuminated by the soft glow of multiple computer monitors. The lighting is moody and technical with electric blue highlights. The overall visual style is sophisticated and minimalist, consistent with a high-performance dark-mode coding environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTKuMLSdICCWmhTnZHpuF1Vb_ySh_Klk3mtgKsj5A2_c5iZT0MV2rlooY4dxblFKBT0ScxnscFp_alH99UxQUxGH5alnpzTkaN10_BP3SnvvNtXhNUwYjqeeSdo4EGYaWiS54DTTuK7ZW9zuYr4C7PuV7XXglwEEfywqCdAvLp4HowQSNsCeJmxiwcOfLfCOHK10vS17_P8--yIznXM10dKk3xHrWno4MysFoh3ZLZ9EkC9mlXN0DZrDXRg6daTCttoT3QjOrjUXQV" />
                   <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-secondary border-2 border-surface-container-low rounded-full"></div>
@@ -95,7 +103,7 @@ const PlayGround = () => {
                   <p className="text-body-md font-body-md text-on-surface truncate">Jordan</p>
                   <p className="text-label-sm font-label-sm text-outline truncate">Away</p>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="p-padding-md border-t border-outline-variant bg-surface-container-lowest">
@@ -104,13 +112,13 @@ const PlayGround = () => {
               Invite Member
             </button>
           </div>
-        </aside>
+        </aside >
         <div className="flex-1 flex flex-col min-w-0 bg-surface-dim">
           <header className=" w-full bg-surface-container border-b border-outline-variant flex justify-between items-center py-2 px-5 z-40">
             <div className="flex items-center gap-padding-md">
               <div className="flex items-center gap-2 px-3 py-1 bg-surface-container-lowest rounded border border-outline-variant">
                 <span className="material-symbols-outlined text-secondary text-sm" >hub</span>
-                <span className="text-body-md font-body-md text-on-surface-variant">Room: <span className="text-on-surface font-bold">alpha-7-v2</span></span>
+                <span className="text-body-md font-body-md text-on-surface-variant">Room: <span className="text-on-surface font-bold">{(room?.roomId && room?.roomId.toString().slice(0, 10))}</span></span>
               </div>
               <div className="flex items-center gap-1.5 px-2.5 py-1 bg-secondary/10 text-secondary border border-secondary/20 rounded-full">
                 <span className="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
@@ -119,9 +127,23 @@ const PlayGround = () => {
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center -space-x-2 mr-2">
-                <div className="w-6 h-6 rounded-full border-2 border-surface-container bg-primary-container flex items-center justify-center text-[10px] text-on-primary-container font-bold">S</div>
-                <div className="w-6 h-6 rounded-full border-2 border-surface-container bg-secondary-container flex items-center justify-center text-[10px] text-on-secondary-container font-bold">A</div>
-                <div className="w-6 h-6 rounded-full border-2 border-surface-container bg-surface-container-high flex items-center justify-center text-[10px] text-on-surface-variant font-bold">+1</div>
+
+                {
+                  room?.users.length >= 1 && room?.users.slice(0,2).map((user, index) => (
+                    <div className="w-6 h-6 rounded-full border-2 border-surface-container bg-primary-container flex items-center justify-center text-[10px] text-on-primary-container font-bold">S</div>
+                  ))}
+                {
+                  room?.total_users > 2 && (
+                    <div className="w-6 h-6 rounded-full border-2 border-surface-container bg-surface-container-high flex items-center justify-center text-[10px] text-on-surface-variant font-bold">+{room.total_users - 2}</div>
+                  )
+                }
+                {/* {
+                  room?.users.some((u) => u.user_id.id == room.createdBy) && (
+                    <h4>hi</h4>
+                  )
+
+ 
+                } */}
               </div>
               <button className="p-2 py-1 bg-primary text-on-primary text-label-sm font-label-sm rounded hover:opacity-90 active:scale-95 transition-all">
                 Share
@@ -146,9 +168,8 @@ const PlayGround = () => {
             </div>
             <div className="flex items-center gap-padding-md">
               <div className="relative group">
-                <button className="flex items-center gap-2 px-3 py-1 bg-surface-container-high text-on-surface text-label-sm font-label-sm rounded hover:bg-surface-container-highest transition-colors">
-                  <span>JavaScript</span>
-                  <span className="material-symbols-outlined text-[16px]">expand_more</span>
+                <button className="flex capitalize items-center gap-2 px-3 py-1 bg-surface-container-high text-on-surface text-label-sm font-label-sm rounded hover:bg-surface-container-highest transition-colors">
+                  {room?.language}
                 </button>
               </div>
               <button className="flex items-center gap-2 px-4 py-1 bg-secondary text-on-secondary text-label-sm font-label-sm rounded hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-secondary/10">
@@ -162,7 +183,7 @@ const PlayGround = () => {
             />;
           </div>
         </div>
-      </div>
+      </div >
     </>
   )
 }

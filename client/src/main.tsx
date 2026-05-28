@@ -47,7 +47,7 @@ const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           {
-            path: "/play-ground",
+            path: "/play-ground/:room_id",
             Component: PlayGround,
           },
         ]

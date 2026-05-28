@@ -11,8 +11,6 @@ const AuthInitializer = () => {
 
     const dispatch = useDispatch();
 
-    const { isLoading } = useSelector((state) => state.auth);
-
     useEffect(() => {
 
         const restoreSession = async () => {
@@ -35,11 +33,7 @@ const AuthInitializer = () => {
         restoreSession();
 
     }, []);
-
-    // if (isLoading) {
-    //     return <div>Loading...</div>;
-    // }
-
+  
     return <Outlet />;
 };
 
