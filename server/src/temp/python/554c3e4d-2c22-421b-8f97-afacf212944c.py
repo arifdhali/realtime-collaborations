@@ -1,6 +1,7 @@
-print("Hello world")
+print("Hell world");
 
-def test(a,b):
-    print(a + b)
 
-test(10,20)
+def test():
+    print("Hello this is a test")
+test()
+

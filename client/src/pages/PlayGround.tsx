@@ -1,15 +1,26 @@
 import Editor from '@monaco-editor/react';
 import { Link, useNavigate, useParams } from 'react-router';
 import api from '../Api';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-
+import { MonacoBinding } from "y-monaco";
+import * as Y from "yjs";
+import { WebsocketProvider } from 'y-websocket';
+import { useSelector } from 'react-redux';
 const PlayGround = () => {
+  const editorRef = useRef<any>(null);
 
+  const providerRef = useRef<null>(null);
+
+  const ydocRef = useRef<Y.Doc | null>(null);
+
+  const [onlineUsers, setOnlineUsers] = useState<any[]>([]);
+
+  const { user: currentUser } = useSelector((state) => state.auth)
   const { room_id } = useParams();
   const navigate = useNavigate();
 
-  const [code, setCode] = useState("// some comment");
+  const [code, setCode] = useState("");
   const [room, setRoom] = useState();
   const [output, setOutput] = useState("");
   const [isRunning, setIsRunning] = useState(false);
@@ -73,7 +84,6 @@ const PlayGround = () => {
     }
 
   };
-
   const runCode = async () => {
 
     try {
@@ -81,8 +91,9 @@ const PlayGround = () => {
       setIsRunning(true);
       setOutput("Running code...\n");
 
+      let currentCode = editorRef.current.getValue();
       let res = await api.post(`/room/run-code`, {
-        code,
+        code: currentCode,
         language: room?.language,
         roomId: room?.roomId,
       });
@@ -91,21 +102,143 @@ const PlayGround = () => {
 
         setOutput(res.data.output || "Code executed successfully");
 
+      } else {
+        setOutput(res.data.output)
       }
 
+
     } catch (err) {
-
-      setOutput(err?.response?.data?.message || "Something went wrong");
-
       toast.error("Execution failed");
-
     } finally {
-
       setIsRunning(false);
-
     }
 
   };
+
+
+  const handleEditorMount = (editor: any) => {
+    editorRef.current = editor;
+    const ydoc = new Y.Doc();
+    const provider = new WebsocketProvider(
+      import.meta.env.VITE_SOCKET_URL,
+      room?.roomId || "room-1",
+      ydoc
+    );
+
+    providerRef.current = provider;
+    ydocRef.current = ydoc;
+
+    const yText = ydoc.getText("monaco");
+
+    new MonacoBinding(
+      yText,
+      editor.getModel(),
+      new Set([editor]),
+      provider.awareness
+    );
+
+    const userColor = "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0");
+
+    provider.awareness.setLocalStateField("user", {
+      id: currentUser?._id,
+      name: currentUser?.name,
+      color: userColor,
+    });
+
+    editor.onDidChangeCursorPosition((e) => {
+      provider.awareness.setLocalStateField("cursor", {
+        lineNumber: e.position.lineNumber,
+        column: e.position.column,
+      });
+    });
+
+    provider.on("status", (e) => {
+      console.log("STATUS:", e.status);
+    });
+
+    provider.once("sync", (isSynced) => {
+      if (isSynced && yText.length === 0 && code) {
+        ydoc.transact(() => {
+          yText.insert(0, code);
+        });
+      }
+    });
+
+    let decorations: string[] = [];
+
+    provider.awareness.on("change", () => {
+      const states = Array.from(
+        provider.awareness.getStates().values()
+      );
+
+      setOnlineUsers(states);
+
+      const newDecorations: any[] = [];
+
+      provider.awareness.getStates().forEach((state: any, clientId) => {
+
+        if (!state.cursor) return;
+
+        const color = state.user?.color || "#ff0000";
+        const username = state.user?.name || "User";
+
+        const cursorClass = `remote-cursor-${clientId}`;
+
+        if (!document.getElementById(cursorClass)) {
+          const style = document.createElement("style");
+
+          style.id = cursorClass;
+
+          style.innerHTML = `
+          .${cursorClass} {
+            border-left: 2px solid ${color};
+            position: relative;
+          }
+
+          .${cursorClass}::after {
+            content: "${username}";
+            position: absolute;
+            top: 17px;
+            left: 0px;
+            background: ${color};
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+            z-index: 9999;
+          }
+        `;
+
+          document.head.appendChild(style);
+        }
+
+        newDecorations.push({
+          range: {
+            startLineNumber: state.cursor.lineNumber,
+            startColumn: state.cursor.column,
+            endLineNumber: state.cursor.lineNumber,
+            endColumn: state.cursor.column,
+          },
+          options: {
+            className: cursorClass,
+          },
+        });
+      }
+      );
+
+      decorations = editor.deltaDecorations(decorations, newDecorations);
+    });
+  };
+  useEffect(() => {
+    return () => {
+      providerRef.current?.destroy();
+      ydocRef.current?.destroy();
+    };
+  }, []);
+
+
 
   return (
 
@@ -144,7 +277,7 @@ const PlayGround = () => {
                 <span className="w-2 h-2 rounded-full bg-secondary"></span>
 
                 <span className="text-[10px]">
-                  {room?.total_users || 0} Live
+                  {onlineUsers.length || 0} Live
                 </span>
 
               </span>
@@ -154,8 +287,8 @@ const PlayGround = () => {
             <div className="p-2 space-y-padding-sm py-padding-sm">
 
               {
-                room?.users?.length > 0 &&
-                room.users.map((user, index) => (
+                onlineUsers?.length > 0 &&
+                onlineUsers.map((user, index) => (
 
                   <div
                     key={index}
@@ -166,7 +299,7 @@ const PlayGround = () => {
 
                       <div className="w-8 h-8 rounded-full border border-outline-variant bg-primary-container flex items-center justify-center text-xs font-bold text-on-primary-container uppercase">
 
-                        {user?.user_id?.name?.charAt(0)}
+                        {user?.user?.name?.charAt(0)}
 
                       </div>
 
@@ -174,8 +307,14 @@ const PlayGround = () => {
 
                     </div>
 
-                    <p className="text-body-md font-body-md text-on-surface truncate">
-                      {user?.user_id?.name}
+                    <p className="text-body-md font-body-md text-on-surface truncate flex items-center gap-2">
+                      {user?.user?.name}
+
+                      {
+                        user?.user?.id == currentUser._id ? <span className="material-symbols-outlined text-green-600">
+                          globe_asia
+                        </span> : ""
+                      }
                     </p>
 
                   </div>
@@ -249,15 +388,15 @@ const PlayGround = () => {
               <div className="flex items-center -space-x-2 mr-2">
 
                 {
-                  room?.users?.length >= 1 &&
-                  room?.users?.slice(0, 2).map((user, index) => (
+                  onlineUsers.length >= 1 &&
+                  onlineUsers?.slice(0, 2).map((user, index) => (
 
                     <div
                       key={index}
                       className="w-6 h-6 rounded-full border-2 border-surface-container bg-primary-container flex items-center justify-center text-[10px] text-on-primary-container font-bold uppercase"
                     >
 
-                      {user?.user_id?.name?.charAt(0)}
+                      {user?.user?.name?.charAt(0)}
 
                     </div>
 
@@ -265,11 +404,11 @@ const PlayGround = () => {
                 }
 
                 {
-                  room?.total_users > 2 && (
+                  onlineUsers.length > 2 && (
 
                     <div className="w-6 h-6 rounded-full border-2 border-surface-container bg-surface-container-high flex items-center justify-center text-[10px] text-on-surface-variant font-bold">
 
-                      +{room.total_users - 2}
+                      +{onlineUsers.length - 2}
 
                     </div>
 
@@ -345,15 +484,15 @@ const PlayGround = () => {
             {/* CODE EDITOR */}
             <div className="flex-1">
 
-              <Editor
-                value={code}
-                onChange={(value) => setCode(value || "")}
-                height="100%"
-                defaultLanguage={room?.language || "javascript"}
-                defaultValue="// some comment"
-                theme="vs-dark"
-              />
-
+              {room && (
+                <Editor
+                  value={code}
+                  height="100%"
+                  language={room.language}
+                  theme="vs-dark"
+                  onMount={handleEditorMount}
+                />
+              )}
             </div>
 
             {/* TERMINAL */}

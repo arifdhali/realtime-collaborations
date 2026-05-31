@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, "/upload")))
 // app.use("/game",gameRoutes);
 
 app.use("/api", routes);
-
+ 
 
 app.use((req: Request, res: Response, next: NextFunction) => {
     next(new AppError(`Route ${req.originalUrl} not found`, 404));
